@@ -9,6 +9,10 @@ services:
       - mongo-data:/data/db
     ports:
       - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASS}
+      - MONGO_INITDB_DATABASE=${MONGO_DB}
 
   backpaws:
     build:
@@ -19,10 +23,16 @@ services:
     depends_on:
       - mongo
     ports:
-      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - /home/tanner/gwynnie/persist/photos:/app/photos # Mount host's photo directory to container
     environment:
-      # if you used application.properties with placeholder
-      - MONGO_URI=mongodb://mongo:27017/backpaws
+      - SPRING_DATA_MONGODB_HOST=mongo
+      - SPRING_DATA_MONGODB_PORT=27017
+      - SPRING_DATA_MONGODB_DATABASE=${MONGO_DB}
+      - SPRING_DATA_MONGODB_USERNAME=${MONGO_ROOT_USER}
+      - SPRING_DATA_MONGODB_PASSWORD=${MONGO_ROOT_PASS}
+      - PHOTO_PATH=/app/photos
 
 volumes:
   mongo-data:

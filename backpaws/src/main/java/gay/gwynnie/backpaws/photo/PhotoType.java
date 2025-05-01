@@ -1,4 +1,4 @@
-package gay.gwynnie.backpaws;
+package gay.gwynnie.backpaws.photo;
 
 public enum PhotoType {
     JPEG("jpg"),

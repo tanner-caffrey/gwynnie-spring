@@ -3,5 +3,8 @@ spring:
     name: backpaws
   data:
     mongodb:
-      uri: ${MONGO_URI}
-PHOTO_PATH: /app/photos
+      host: ${SPRING_DATA_MONGODB_HOST:localhost}
+      port: ${SPRING_DATA_MONGODB_PORT:27017}
+      database: ${SPRING_DATA_MONGODB_DATABASE:backpaws}
+      username: ${SPRING_DATA_MONGODB_USERNAME:}
+      password: ${SPRING_DATA_MONGODB_PASSWORD:}
