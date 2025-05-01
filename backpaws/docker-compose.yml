@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+
+  mongo:
+    image: mongo:6.0
+    container_name: backpaws-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+  backpaws:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backpaws-spring
+    restart: on-failure
+    depends_on:
+      - mongo
+    ports:
+      - "8080:8080"
+    environment:
+      # if you used application.properties with placeholder
+      - MONGO_URI=mongodb://mongo:27017/your_database_name
+
+volumes:
+  mongo-data:

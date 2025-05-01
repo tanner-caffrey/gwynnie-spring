@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: backpaws
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/backpaws
+PHOTO_PATH: /app/photos
