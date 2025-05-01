@@ -3,5 +3,5 @@ spring:
     name: backpaws
   data:
     mongodb:
-      uri: mongodb://localhost:27017/backpaws
+      uri: ${MONGO_URI}
 PHOTO_PATH: /app/photos
