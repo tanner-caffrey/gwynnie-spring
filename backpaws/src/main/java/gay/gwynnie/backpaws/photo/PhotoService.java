@@ -5,13 +5,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.annotation.PostConstruct;
 
@@ -24,13 +29,61 @@ public class PhotoService {
 
     @Autowired
     private PhotoRepository photoRepository;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @PostConstruct
-    public void init() {
+    public void syncJsonAndDb() throws IOException {
         this.dir = Paths.get(photoPath);
         if (!dir.toFile().exists()) {
             throw new RuntimeException("Photo path does not exist: " + photoPath);
         }
+
+        Path jsonFile = Paths.get(photoPath, "photos.json");
+
+        PhotoJsonData jsonData;
+        if (Files.exists(jsonFile)) {
+            // 1) Read existing JSON
+            jsonData = mapper.readValue(jsonFile.toFile(), PhotoJsonData.class);
+        } else {
+            // 1b) No file yet → start with an empty list
+            jsonData = new PhotoJsonData("/photos", List.of());
+            Files.createDirectories(jsonFile.getParent());
+        }
+
+        String uriPrefix = jsonData.path();
+
+        // 2) Upsert JSON → Mongo
+        for (PhotoJson pj : jsonData.photos()) {
+            Photo p = new Photo(
+                pj.filename(),
+                pj.title(),
+                pj.description(),
+                PhotoType.getFromFilename(pj.filename()));
+            photoRepository.save(p);
+        }
+
+        // 3) Fetch all from Mongo and find which are missing in the JSON
+        List<Photo> allFromDb = photoRepository.findAll();
+        Set<String> seen = jsonData.photos()
+                                .stream()
+                                .map(PhotoJson::filename)
+                                .collect(Collectors.toSet());
+
+        List<PhotoJson> merged = new ArrayList<>(jsonData.photos());
+        for (Photo dbp : allFromDb) {
+            if (!seen.contains(dbp.fileName())) {
+                merged.add(new PhotoJson(
+                    dbp.fileName(),
+                    dbp.title(),
+                    dbp.description()
+                ));
+            }
+        }
+
+        // 4) Write back the JSON (pretty-printed)
+        PhotoJsonData out = new PhotoJsonData(uriPrefix, merged);
+        mapper.writerWithDefaultPrettyPrinter()
+              .writeValue(jsonFile.toFile(), out);
     }
 
     public Photo getPhoto(String fileName) {
