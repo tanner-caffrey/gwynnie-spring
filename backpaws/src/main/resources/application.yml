@@ -8,3 +8,4 @@ spring:
       database: ${SPRING_DATA_MONGODB_DATABASE:backpaws}
       username: ${SPRING_DATA_MONGODB_USERNAME:}
       password: ${SPRING_DATA_MONGODB_PASSWORD:}
+      authentication-database: admin
