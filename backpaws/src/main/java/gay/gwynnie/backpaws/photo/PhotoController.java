@@ -47,7 +47,7 @@ public class PhotoController {
         }
     }
 
-    @GetMapping("/photos")
+    @GetMapping(path={"/photos", "/photos/"})
     public ResponseEntity<List<Photo>> getAllPhotos() {
         List<Photo> photos = photoService.getAllPhotos();
         
