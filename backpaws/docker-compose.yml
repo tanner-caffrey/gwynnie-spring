@@ -25,7 +25,7 @@ services:
     ports:
       - "8081:8080"
     volumes:
-      - /home/tanner/gwynnie/persist/photos:/app/photos # Mount host's photo directory to container
+      - ${PHOTO_STORAGE_PATH}:/app/photos # Mount host's photo directory to container
     environment:
       - SPRING_DATA_MONGODB_HOST=mongo
       - SPRING_DATA_MONGODB_PORT=27017
