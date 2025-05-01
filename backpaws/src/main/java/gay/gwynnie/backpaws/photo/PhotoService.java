@@ -13,6 +13,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 public class PhotoService {
 
@@ -23,10 +25,11 @@ public class PhotoService {
     @Autowired
     private PhotoRepository photoRepository;
 
-    public PhotoService() {
+    @PostConstruct
+    public void init() {
         this.dir = Paths.get(photoPath);
-        if(!dir.toFile().exists()) {
-            throw new IllegalArgumentException("Photo path does not exist: " + photoPath);
+        if (!dir.toFile().exists()) {
+            throw new RuntimeException("Photo path does not exist: " + photoPath);
         }
     }
 
@@ -39,10 +42,10 @@ public class PhotoService {
     }
 
     private boolean isValidFileName(String fileName) {
-        if(fileName == null || fileName.isEmpty()) {
+        if (fileName == null || fileName.isEmpty()) {
             return false;
         }
-        if(!PhotoType.isValidFileName(fileName)) {
+        if (!PhotoType.isValidFileName(fileName)) {
             return false;
         }
         return true;
@@ -50,7 +53,7 @@ public class PhotoService {
 
     public boolean fileExists(String fileName) {
         Path path = dir.resolve(fileName);
-        if(!path.toFile().exists()) {
+        if (!path.toFile().exists()) {
             return false;
         }
         return true;
@@ -60,24 +63,24 @@ public class PhotoService {
      * Saves the raw photo bytes to disk (overwriting if already exists),
      * then upserts the Photo document in MongoDB.
      *
-     * @param data         the image bytes
-     * @param fileName     the name (and key) of the photo
-     * @param title        user-friendly title
-     * @param description  optional description
+     * @param data        the image bytes
+     * @param fileName    the name (and key) of the photo
+     * @param title       user-friendly title
+     * @param description optional description
      * @return the saved Photo record
-     * @throws IOException if writing to disk fails
+     * @throws IOException              if writing to disk fails
      * @throws IllegalArgumentException on invalid fileName
      */
     private Photo savePhotoFromData(byte[] data, Photo photo) throws IOException {
         // Validate the file name
-        if(!isValidFileName(photo.fileName())) {
+        if (!isValidFileName(photo.fileName())) {
             throw new IllegalArgumentException("Invalid file name: " + photo.fileName());
         }
 
         // Write or overrite file to disk
         Path file = dir.resolve(photo.fileName());
         Files.write(file, data, StandardOpenOption.CREATE,
-                    StandardOpenOption.TRUNCATE_EXISTING);
+                StandardOpenOption.TRUNCATE_EXISTING);
 
         // Upsert the photo in MongoDB
         return photoRepository.save(photo);

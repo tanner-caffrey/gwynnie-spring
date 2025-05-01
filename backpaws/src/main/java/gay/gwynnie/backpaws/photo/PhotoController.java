@@ -33,7 +33,7 @@ public class PhotoController {
     //     }
     // }
 
-    @GetMapping("/photo/{fileName:/.+}")
+    @GetMapping("/photos/{fileName:.+}")
     public ResponseEntity<Resource> servePhoto(@PathVariable String fileName) {
         try{
             Resource file = photoService.loadAsResource(fileName);
