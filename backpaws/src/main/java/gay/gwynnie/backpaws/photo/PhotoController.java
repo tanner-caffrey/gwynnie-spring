@@ -61,22 +61,18 @@ public class PhotoController {
         @RequestParam("photo") MultipartFile photo,
         @RequestParam("title") String title,
         @RequestParam("description") String description) {
-        // 1) Basic validation
         if (photo.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
 
-        // 2) Clean the filename (prevents path traversal)
         String filename = StringUtils.cleanPath(photo.getOriginalFilename());
         Photo photoData = new Photo(filename, title, description, PhotoType.getFromFilename(filename));
         try {
-            // 3) Delegate to your service
             Photo saved = photoService.savePhoto(
                 photo.getBytes(),
                 photoData
             );
 
-            // 4) Build a Location URI: /photos/{filename}
             URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/photos/{filename}")
                 .buildAndExpand(saved.fileName())

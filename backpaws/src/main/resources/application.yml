@@ -9,3 +9,6 @@ spring:
       username: ${SPRING_DATA_MONGODB_USERNAME:}
       password: ${SPRING_DATA_MONGODB_PASSWORD:}
       authentication-database: admin
+server:
+  servlet:
+    context-path: /v2
