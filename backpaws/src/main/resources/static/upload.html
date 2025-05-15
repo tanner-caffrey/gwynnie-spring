@@ -5,17 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Upload Photo</title>
 
-  <!-- Link to your moved stylesheet -->
   <link rel="stylesheet" href="/style/upload.css" />
 </head>
 <body>
   <h1>Upload a Photo</h1>
 
-  <!-- Feedback message -->
   <div id="message"></div>
 
   <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
-    <!-- form fields as before -->
     <label for="title">Title:</label><br>
     <input type="text" id="title" name="title" required><br><br>
 
@@ -30,7 +27,6 @@
   <br>
   <a href="/photos">Back to Gallery</a>
 
-  <!-- Include your external script -->
   <script src="/js/upload.js"></script>
 </body>
 </html>

@@ -1,18 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Photo Gallery</title>
-  </head>
-  <body>
-    <h1>Photo Gallery</h1>
-    <a th:href="@{/upload}">Upload a photo</a>
-    <br/><br/>
-    <ul>
-      <li th:each="photo : ${photos}">
-        <a th:href="@{/photos/{filename}(filename=${photo.fileName})}"
-           th:text="${photo.fileName}">filename.jpg</a>
-      </li>
-    </ul>
-  </body>
+<head><title>Gallery</title></head>
+<body>
+  <h1>Photo Gallery</h1>
+  <ul>
+    <li th:each="photo : ${photos}">
+      <a th:href="@{/photos/{fn}(fn=${photo.fileName})}"
+         th:text="${photo.fileName}">filename</a>
+    </li>
+  </ul>
+</body>
 </html>
